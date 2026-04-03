@@ -1,0 +1,36 @@
+name: Auto Build undfeine0man/coolcontrold
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # 每天凌晨检查一次基础镜像是否有更新
+  workflow_dispatch: # 允许你手动点击按钮测试
+
+jobs:
+  check-build-push:
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Checkout
+      #   uses: actions/checkout@v6.0.2
+
+      - name: Check if update available
+        id: check
+        uses: lucacome/docker-image-update-checker@v3.0.1
+        with:
+          base-image: coolercontrol/coolercontrold
+          image: undefine0man/coolercontrold:latest
+          platforms: linux/amd64
+
+      - name: Docker Login
+        uses: docker/login-action@v4.1.0
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        if: steps.check.outputs.needs-updating == 'true'
+
+      - name: Build and push
+        uses: docker/build-push-action@v7.0.0
+        with:
+          # context: .
+          push: true
+          tags: undefine0man/coolercontrold:latest
+        if: steps.check.outputs.needs-updating == 'true'
