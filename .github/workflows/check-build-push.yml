@@ -19,7 +19,7 @@ jobs:
           base-image: coolercontrol/coolercontrold
           image: undefine0man/coolercontrold:latest
           platforms: linux/amd64
-        continued-on-error: true
+        continue-on-error: true
 
       - name: Docker Login
         uses: docker/login-action@v4.1.0
