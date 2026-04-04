@@ -21,12 +21,24 @@ jobs:
           platforms: linux/amd64
         continue-on-error: true
 
+      - name: Set build flag
+        id: decide
+        run: |
+          if [ "${{ steps.check.outcome }}" == "success" ] && [ "${{ steps.check.outputs.needs-updating }}" == "true" ]; then
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          elif [ "${{ steps.check.outcome }}" == "failure" ]; then
+            # 失败可能是因为目标镜像不存在，此时应该构建
+          echo "should_build=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_build=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Docker Login
         uses: docker/login-action@v4.1.0
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-        if: steps.check.outputs.needs-updating == 'true'
+        if: steps.decide.outputs.build == 'true'
 
       - name: Build and push
         uses: docker/build-push-action@v7.0.0
@@ -34,4 +46,4 @@ jobs:
           # context: .
           push: true
           tags: undefine0man/coolercontrold:latest
-        if: steps.check.outputs.needs-updating == 'true'
+        if: steps.decide.outputs.build == 'true'
