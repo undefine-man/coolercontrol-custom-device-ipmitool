@@ -25,7 +25,7 @@ jobs:
           base-image: coolercontrol/coolercontrold:latest
           image: undefine0man/coolercontrold:latest
           platforms: linux/amd64
-        # continue-on-error: true
+        continue-on-error: true
 
       # - name: Set build flag
       #   id: decide
