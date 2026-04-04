@@ -34,7 +34,7 @@ jobs:
             echo "should_build=true" >> $GITHUB_OUTPUT
           elif [ "${{ steps.check.outcome }}" == "failure" ]; then
             # 失败可能是因为目标镜像不存在，此时应该构建
-          echo "should_build=true" >> $GITHUB_OUTPUT
+            echo "should_build=true" >> $GITHUB_OUTPUT
           else
             echo "should_build=false" >> $GITHUB_OUTPUT
           fi
@@ -45,4 +45,4 @@ jobs:
           # context: .
           push: true
           tags: undefine0man/coolercontrold:latest
-        if: steps.decide.outputs.build == 'true'
+        if: steps.decide.outputs.should_build == 'true'
