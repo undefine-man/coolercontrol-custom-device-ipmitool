@@ -1,5 +1,12 @@
+# 该工作流会每天检查基础镜像是否有更新，如果有更新或者目标镜像不存在，则会自动构建并推送新的镜像到 Docker Hub。
+# 登录DockerHub
+# 检测基础镜像版本更新
+# - 若是有更新
+# 解析基础镜像版本号
+# 构建镜像
+# 贴相同标签
+# 推送到DockerHub
 name: Auto Build undfeine0man/coolcontrold
-
 on:
   schedule:
     - cron: "0 0 * * *" # 每天凌晨检查一次基础镜像是否有更新
@@ -38,11 +45,23 @@ jobs:
       #     else
       #       echo "should_build=false" >> $GITHUB_OUTPUT
       #     fi
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: undefine0man/coolcontrold
+          tags: |
+            type=raw,value=latest
+            type=raw,value=v1.0.${{ github.run_number }} # 使用运行次数作为小版本号
 
       - name: Build and push
         uses: docker/build-push-action@v7.0.0
+        if: |
+          steps.check.outputs.needs-building == 'true' ||
+          steps.check.outputs.needs-updating == 'true'
         with:
           # context: .
           push: true
-          tags: undefine0man/coolercontrold:latest
-        if: steps.check.outputs.needs-updating == 'true' || steps.check.outputs.needs-building == 'true'
+          tags: |
+            undefine0man/coolcontrold:v1
+            undefine0man/coolcontrold:latest
