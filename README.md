@@ -1,5 +1,5 @@
 CoolerControl ipmi
-本仓库用于帮助你在 CoolerControl Docker 环境中部署自定义设备插件。
+本仓库用于帮助你在 CoolerControl Docker 环境中通过 ipmi 控制主机（如Dell R730）。
 
 相关资源
 CoolerControl 主仓库
